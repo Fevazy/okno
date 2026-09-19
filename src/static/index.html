@@ -10,193 +10,116 @@
     --fg: #e0e0e0;
     --muted: #888;
     --border: #333;
-    --ok: #2e7d32;
-    --ok-fg: #a5d6a7;
-    --partial: #f9a825;
-    --partial-fg: #fff9c4;
-    --insufficient: #c62828;
-    --insufficient-fg: #ef9a9a;
     --accent: #4fc3f7;
     --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: var(--bg);
-    color: var(--fg);
+    background: var(--bg); color: var(--fg);
     font-family: system-ui, -apple-system, sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    padding: 24px;
-    max-width: 900px;
-    margin: 0 auto;
+    font-size: 15px; line-height: 1.5; padding: 24px;
+    max-width: 960px; margin: 0 auto;
   }
-  h1 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    color: var(--accent);
-    font-weight: 600;
-  }
-  h2 {
-    font-size: 1.1rem;
-    margin: 24px 0 12px;
-    color: var(--accent);
-    font-weight: 600;
-  }
-  fieldset {
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-  legend {
-    font-weight: 600;
-    padding: 0 8px;
-    color: var(--muted);
-  }
-  label {
-    display: inline-block;
-    margin-right: 12px;
-    margin-bottom: 8px;
-  }
+  h1 { font-size: 1.5rem; margin-bottom: 20px; color: var(--accent); font-weight: 600; }
+  h2 { font-size: 1.1rem; margin: 24px 0 12px; color: var(--accent); font-weight: 600; }
+  h3 { font-size: 1rem; margin: 16px 0 8px; font-weight: 600; }
+  fieldset { border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+  legend { font-weight: 600; padding: 0 8px; color: var(--muted); }
+  label { display: inline-block; margin-right: 12px; margin-bottom: 8px; }
   input, select, button {
-    background: #252525;
-    color: var(--fg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 6px 10px;
-    font-size: 0.95rem;
-    font-family: inherit;
+    background: #252525; color: var(--fg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 6px 10px; font-size: 0.95rem; font-family: inherit;
   }
-  input:focus, select:focus {
-    outline: 1px solid var(--accent);
-    border-color: var(--accent);
-  }
+  input:focus, select:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
   button {
-    cursor: pointer;
-    background: var(--accent);
-    color: #111;
-    font-weight: 600;
-    border: none;
-    padding: 8px 18px;
-    transition: opacity .15s;
+    cursor: pointer; background: var(--accent); color: #111; font-weight: 600;
+    border: none; padding: 8px 18px; transition: opacity .15s;
   }
   button:hover { opacity: .85; }
-  button:disabled { opacity: .4; cursor: not-allowed; }
-  button.secondary {
-    background: #333;
-    color: var(--fg);
-    font-weight: 400;
-  }
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: end;
-  }
+  button.secondary { background: #333; color: var(--fg); font-weight: 400; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
   .row > div { flex: 0 0 auto; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 8px 0 16px;
-    font-size: 0.9rem;
-  }
-  th, td {
-    text-align: left;
-    padding: 6px 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  th {
-    color: var(--muted);
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: .03em;
-  }
-  .score-big {
-    font-family: var(--mono);
-    font-size: 2.6rem;
-    font-weight: 700;
-    line-height: 1;
-  }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: .03em; }
+
+  .score-big { font-family: var(--mono); font-size: 2.6rem; font-weight: 700; line-height: 1; }
+
+  /* бейдж данных (status: ok / partial / insufficient_data) */
   .badge {
-    display: inline-block;
-    padding: 3px 12px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .04em;
+    display: inline-block; padding: 3px 12px; border-radius: 12px;
+    font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .04em; background: #333; color: var(--fg);
   }
-  .badge.ok          { background: var(--ok);           color: var(--ok-fg); }
-  .badge.partial     { background: var(--partial);      color: var(--partial-fg); }
-  .badge.insufficient_data { background: var(--insufficient); color: var(--insufficient-fg); }
+  .badge.ok { background: #1b3a1c; color: #a5d6a7; }
+  .badge.partial { background: #3d3210; color: #fff59d; }
+  .badge.insufficient_data { background: #3d1414; color: #ef9a9a; }
+
+  /* бейдж риска — цвет по score, пять зон */
+  .risk {
+    display: inline-block; padding: 3px 12px; border-radius: 12px;
+    font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .risk-safe    { background: #1b3a1c; color: #a5d6a7; }
+  .risk-ok      { background: #274228; color: #c5e1a5; }
+  .risk-caution { background: #3d3210; color: #fff59d; }
+  .risk-warn    { background: #4a2e0a; color: #ffcc80; }
+  .risk-danger  { background: #4a1010; color: #ef9a9a; }
+  .risk-none    { background: #2a2a2a; color: var(--muted); }
+
   .error-box {
-    background: #4a1010;
-    border: 1px solid #c62828;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin: 12px 0;
-    color: #ef9a9a;
-    font-size: 0.9rem;
+    background: #4a1010; border: 1px solid #c62828; border-radius: 6px;
+    padding: 12px 16px; margin: 12px 0; color: #ef9a9a; font-size: 0.9rem;
   }
   .info-box {
-    background: #102030;
-    border: 1px solid #4fc3f7;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin: 12px 0;
-    color: #b3e5fc;
-    font-size: 0.9rem;
+    background: #102030; border: 1px solid #4fc3f7; border-radius: 6px;
+    padding: 12px 16px; margin: 12px 0; color: #b3e5fc; font-size: 0.9rem;
   }
-  .warn-list {
-    list-style: none;
-    padding: 0;
-  }
-  .warn-list li {
-    padding: 4px 0;
-    color: #ffb74d;
-    font-size: 0.9rem;
-  }
+  .warn-list { list-style: none; padding: 0; }
+  .warn-list li { padding: 4px 0; color: #ffb74d; font-size: 0.9rem; }
   .warn-list li::before { content: '⚠ '; }
   .mono { font-family: var(--mono); }
   .muted { color: var(--muted); font-size: 0.85rem; }
-  .window-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .window-row input { flex: 0 0 auto; }
-  .window-id {
-    font-family: var(--mono);
-    font-weight: 700;
-    color: var(--accent);
-    min-width: 28px;
-    text-align: center;
-  }
+  .window-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .window-id { font-family: var(--mono); font-weight: 700; color: var(--accent); min-width: 28px; text-align: center; }
   #compareResult { margin-top: 16px; }
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
   .top-bar h1 { margin: 0; }
 
-  /* Панель глобального режима — единственный переключатель на странице. */
-  .mode-bar {
-    background: #1f2733;
-    border-color: #2b3a4d;
+  .score-scale {
+    display: flex; align-items: center; gap: 12px; margin: 12px 0;
+    font-size: 0.85rem; color: var(--muted);
   }
-  .mode-bar legend { color: var(--accent); }
-  .mode-bar .row { align-items: center; }
-  .mode-bar strong { margin-right: 4px; }
-  #modeHint {
-    margin-left: 8px;
-    font-size: 0.85rem;
-    color: var(--muted);
-    line-height: 1.4;
+  .score-bar {
+    flex: 1; height: 12px; border-radius: 6px;
+    background: linear-gradient(to right,
+      #2e7d32 0%, #66bb6a 30%, #fff176 50%, #ffb74d 70%, #e53935 100%);
+    position: relative;
+  }
+  .score-marker {
+    position: absolute; top: -4px; width: 4px; height: 20px;
+    background: #fff; border-radius: 2px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 4px rgba(0,0,0,0.8);
+  }
+
+  /* цвет цифры score */
+  .score-safe    { color: #66bb6a; }
+  .score-ok      { color: #aed581; }
+  .score-caution { color: #fff176; }
+  .score-warn    { color: #ffb74d; }
+  .score-danger  { color: #ef5350; }
+  .score-none    { color: var(--muted); }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.8rem;
+    margin: 8px 0 16px; padding: 8px 12px; background: #222; border-radius: 6px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-note {
+    font-size: 0.8rem; color: var(--muted);
+    margin: 4px 0 16px;
   }
 </style>
 </head>
@@ -208,20 +131,29 @@
 </div>
 <div id="factorsResult"></div>
 
-<!-- ===== Единственный переключатель режима ===== -->
-<fieldset class="mode-bar">
-  <legend>Режим расчёта</legend>
-  <div class="row">
-    <strong>Режим:</strong>
-    <label><input type="radio" name="globalMode" value="current" checked> current</label>
-    <label><input type="radio" name="globalMode" value="historical"> historical</label>
-  </div>
-  <div id="modeHint" class="muted"></div>
-</fieldset>
+<!-- ===== Шкала оценки ===== -->
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:#2e7d32"></span> −100…−50: безопасно</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#66bb6a"></span> −50…0: спокойно</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#fff176"></span> 0…+30: внимание</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ffb74d"></span> +30…+70: риск</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#e53935"></span> +70…+100: критично</div>
+</div>
+<p class="legend-note">
+  Оценка — уровень риска (шкала −100…+100, где +100 = критично).
+  Статус — полнота данных (норма / частично / мало данных).
+  Это разные вещи: данные могут быть полными, а риск — высоким.
+</p>
 
 <!-- ===== Форма оценки ===== -->
 <fieldset>
   <legend>Оценка окна</legend>
+  <div class="row" style="margin-bottom:12px">
+    <div>
+      <label><input type="radio" name="mode" value="current" checked> текущий</label>
+      <label><input type="radio" name="mode" value="historical"> исторический</label>
+    </div>
+  </div>
   <div class="row" style="margin-bottom:12px">
     <div>
       <label for="evStart">Начало (UTC)</label><br>
@@ -239,10 +171,9 @@
       <button id="btnEvaluate">Оценить</button>
     </div>
   </div>
-  <p class="muted">Все времена — UTC.</p>
+  <p class="muted">Все времена — UTC. Для исторического режима: 2024-05-01 … 2024-06-30.</p>
 </fieldset>
 
-<!-- ===== Результат оценки ===== -->
 <div id="evaluateResult"></div>
 
 <!-- ===== Сравнение окон ===== -->
@@ -252,8 +183,13 @@
   <div id="windowList"></div>
   <button type="button" class="secondary" id="btnAddWindow" style="margin-top:8px">+ добавить окно</button>
   <div style="margin-top:12px">
-    <button type="button" id="btnCompare">Сравнить</button>
+    <label style="margin-right:12px">
+      Режим:
+      <label><input type="radio" name="cmpMode" value="current" checked> текущий</label>
+      <label><input type="radio" name="cmpMode" value="historical"> исторический</label>
+    </label>
   </div>
+  <button type="button" id="btnCompare" style="margin-top:8px">Сравнить</button>
 </fieldset>
 <div id="compareResult"></div>
 
@@ -262,18 +198,14 @@
 // Утилиты
 // ---------------------------------------------------------------------------
 const $ = (sel) => document.querySelector(sel);
-
 const el = (tag, attrs = {}, ...children) => {
+  attrs = attrs || {};
   const e = document.createElement(tag);
-  // Защита от null/undefined: в коде повсеместно el('td', null, ...).
-  if (attrs) {
-    for (const [k, v] of Object.entries(attrs)) {
-      if (v === null || v === undefined) continue;
-      if (k === 'className') e.className = v;
-      else if (k === 'textContent') e.textContent = v;
-      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
-      else e.setAttribute(k, v);
-    }
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'className') e.className = v;
+    else if (k === 'textContent') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
   }
   for (const c of children) {
     if (typeof c === 'string') e.appendChild(document.createTextNode(c));
@@ -287,21 +219,12 @@ function fmtScore(v) {
   return Number(v).toFixed(2);
 }
 
-// Единая точка чтения режима: оба запроса (/evaluate и /compare) берут отсюда.
-function getMode() {
-  const checked = document.querySelector('input[name="globalMode"]:checked');
-  return checked ? checked.value : 'current';
-}
-
-// datetime-local value "2024-06-01T12:00" -> ISO "2024-06-01T12:00:00+00:00"
-// поле трактуется как UTC (так написано в лейбле).
 function localToIso(val) {
   if (!val) return '';
   const withSec = val.length === 16 ? val + ':00' : val;
   return withSec + '+00:00';
 }
 
-// UTC-время, сдвинутое на offsetHours, в формате datetime-local.
 function nowUtcStr(offsetHours = 0) {
   const d = new Date(Date.now() + offsetHours * 3600_000);
   const pad = (n) => String(n).padStart(2, '0');
@@ -313,19 +236,129 @@ function showError(container, msg) {
   container.appendChild(el('div', { className: 'error-box' }, `Ошибка: ${msg}`));
 }
 
-function badge(status) {
-  return el('span', { className: `badge ${status}` }, status);
+// ---------------------------------------------------------------------------
+// Пять зон риска — цвета совпадают с легендой и градиентом.
+// ---------------------------------------------------------------------------
+function scoreClass(v) {
+  if (v === null || v === undefined) return 'score-none';
+  if (v <= -50) return 'score-safe';
+  if (v < 0)    return 'score-ok';
+  if (v < 30)   return 'score-caution';
+  if (v < 70)   return 'score-warn';
+  return 'score-danger';
+}
+
+function riskClass(v) {
+  if (v === null || v === undefined) return 'risk-none';
+  if (v <= -50) return 'risk-safe';
+  if (v < 0)    return 'risk-ok';
+  if (v < 30)   return 'risk-caution';
+  if (v < 70)   return 'risk-warn';
+  return 'risk-danger';
+}
+
+function riskLabel(v) {
+  if (v === null || v === undefined) return 'НЕТ ОЦЕНКИ';
+  if (v <= -50) return 'БЕЗОПАСНО';
+  if (v < 0)    return 'СПОКОЙНО';
+  if (v < 30)   return 'ВНИМАНИЕ';
+  if (v < 70)   return 'РИСК';
+  return 'КРИТИЧНО';
+}
+
+// бейдж полноты данных — отдельно от бейджа риска
+function dataStatusLabel(status) {
+  const map = {
+    ok: 'ДАННЫЕ ПОЛНЫЕ',
+    partial: 'ДАННЫЕ ЧАСТИЧНЫЕ',
+    insufficient_data: 'МАЛО ДАННЫХ',
+  };
+  return map[status] || String(status || '—').toUpperCase();
+}
+
+function dataStatusBadge(status) {
+  return el('span', { className: `badge ${status}` }, dataStatusLabel(status));
+}
+
+function riskBadge(score) {
+  return el('span', { className: `risk ${riskClass(score)}` }, riskLabel(score));
+}
+
+function scoreBar(score) {
+  const pct = score === null || score === undefined
+    ? 50
+    : ((Number(score) + 100) / 200) * 100;
+  return el('div', { className: 'score-bar' },
+    el('div', { className: 'score-marker', style: `left: ${pct}%` })
+  );
 }
 
 // ---------------------------------------------------------------------------
-// Подсказка под переключателем режима
+// Словари имён, статусов, причин
 // ---------------------------------------------------------------------------
-function updateModeHint() {
-  const hint = $('#modeHint');
-  hint.textContent = getMode() === 'historical'
-    ? 'Используются только данные, опубликованные не позже начала окна (защита от look-ahead bias). Сеть не опрашивается. Допустимый диапазон начала: 2024-05-01 … 2024-06-30.'
-    : 'Используются актуальные данные: при устаревании источников бэкенд дозагружает их из сети.';
+const NAME_RU = {
+  gst: 'ГЕОМАГНИТНАЯ БУРЯ',
+  geomagnetic_storm: 'ГЕОМАГНИТНАЯ БУРЯ',
+  kp: 'KP-ИНДЕКС',
+  kp_index: 'KP-ИНДЕКС',
+  ap: 'AP-ИНДЕКС',
+  ap_index: 'AP-ИНДЕКС',
+  f107: 'ПОТОК F10.7',
+  'f10.7': 'ПОТОК F10.7',
+  f10_7: 'ПОТОК F10.7',
+  spe: 'СОЛНЕЧНЫЕ ПРОТОННЫЕ СОБЫТИЯ',
+  sep: 'СОЛНЕЧНЫЕ ЭНЕРГЕТИЧЕСКИЕ ЧАСТИЦЫ',
+  cme: 'КОРОНАЛЬНЫЙ ВЫБРОС МАССЫ',
+  hss: 'ВЫСОКОСКОРОСТНОЙ ПОТОК',
+  solar_wind: 'СОЛНЕЧНЫЙ ВЕТЕР',
+  sw: 'СОЛНЕЧНЫЙ ВЕТЕР',
+  mmod: 'MMOD',
+  conjunctions: 'СБЛИЖЕНИЯ',
+  conjunction: 'СБЛИЖЕНИЕ',
+  conj: 'СБЛИЖЕНИЯ',
+  debris: 'ОБЛОМКИ',
+  celestrak: 'CELESTRAK',
+  spacetrack: 'SPACE-TRACK',
+  space_track: 'SPACE-TRACK',
+  noaa: 'NOAA',
+  swpc: 'SWPC',
+  space_weather: 'КОСМИЧЕСКАЯ ПОГОДА',
+  trajectory: 'ТРАЕКТОРИЯ',
+  time: 'ВРЕМЯ',
+  lat: 'ШИРОТА',
+  lon: 'ДОЛГОТА',
+  alt_km: 'ВЫСОТА, КМ',
+  ok: 'СТАТУС',
+  flr: 'СОЛНЕЧНАЯ ВСПЫШКА',
+  tle: 'TLE МКС',
+};
+
+function nameRu(key) {
+  if (key === null || key === undefined || key === '') return '—';
+  const k = String(key).toLowerCase().replace(/[\s\-]+/g, '_');
+  return NAME_RU[k] || String(key).toUpperCase();
 }
+
+const STATUS_RU = { fresh: 'СВЕЖИЕ', stale: 'УСТАРЕВШИЕ', no_data: 'НЕТ ДАННЫХ' };
+function statusRu(s) { return STATUS_RU[s] || (s ? String(s).toUpperCase() : '—'); }
+
+const REASON_RU = {
+  '': '—',
+  OK: 'НОРМА',
+  FETCH_SUCCESS: 'ДАННЫЕ ПОЛУЧЕНЫ',
+  EMPTY_RESPONSE: 'СОБЫТИЙ НЕ ОБНАРУЖЕНО',
+  NO_EVENTS: 'СОБЫТИЙ НЕ БЫЛО',
+  NO_DATA: 'НЕТ ДАННЫХ',
+  SOURCE_TIMEOUT: 'ИСТОЧНИК НЕДОСТУПЕН',
+  MISSING_CURRENT: 'НЕТ СВЕЖИХ ДАННЫХ',
+  MISSING_HISTORICAL: 'НЕТ АРХИВНЫХ ДАННЫХ',
+  PARTIAL_HISTORICAL: 'НЕПОЛНЫЕ АРХИВНЫЕ ДАННЫЕ',
+  UNKNOWN_TABLE: 'НЕИЗВЕСТНЫЙ ИСТОЧНИК',
+  UNKNOWN_TTL: 'НЕИЗВЕСТНОЕ ВРЕМЯ ЖИЗНИ',
+  INVALID_MODE: 'НЕКОРРЕКТНЫЙ РЕЖИМ',
+  VALIDATION_ERROR: 'ОШИБКА ВАЛИДАЦИИ',
+};
+function reasonRu(r) { return REASON_RU[r] || (r ? String(r).toUpperCase() : '—'); }
 
 // ---------------------------------------------------------------------------
 // Отрисовка результата оценки
@@ -334,84 +367,93 @@ function renderEvaluate(res, container) {
   container.innerHTML = '';
 
   const scoreDiv = el('div', { style: 'margin:16px 0' });
-  scoreDiv.appendChild(el('div', { className: 'muted' }, 'Overall score'));
-  const scoreRow = el('div', { style: 'display:flex;align-items:center;gap:16px;margin-top:4px' });
-  scoreRow.appendChild(el('span', { className: 'score-big', textContent: fmtScore(res.overall_score) }));
-  scoreRow.appendChild(badge(res.status || '—'));
+  scoreDiv.appendChild(el('div', { className: 'muted' }, 'ИТОГОВАЯ ОЦЕНКА РИСКА'));
+
+  const scoreRow = el('div', { style: 'display:flex;align-items:center;gap:12px;margin-top:4px;flex-wrap:wrap' });
+  scoreRow.appendChild(el('span', {
+    className: `score-big ${scoreClass(res.overall_score)}`,
+    textContent: fmtScore(res.overall_score),
+  }));
+  // два независимых бейджа: риск и полнота данных
+  scoreRow.appendChild(riskBadge(res.overall_score));
+  scoreRow.appendChild(dataStatusBadge(res.status));
   scoreDiv.appendChild(scoreRow);
+
+  const scaleRow = el('div', { className: 'score-scale' });
+  scaleRow.appendChild(el('span', { textContent: '−100' }));
+  scaleRow.appendChild(scoreBar(res.overall_score));
+  scaleRow.appendChild(el('span', { textContent: '+100' }));
+  scoreDiv.appendChild(scaleRow);
   container.appendChild(scoreDiv);
 
   if (res.status === 'insufficient_data') {
     container.appendChild(el('div', { className: 'error-box' },
-      'Недостаточно данных для расчёта overall_score. Проверьте источники ниже.'));
+      'Недостаточно данных для расчёта итоговой оценки. Проверьте источники ниже.'));
   }
 
   if (res.sources_status && Object.keys(res.sources_status).length) {
-    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Источники'));
+    container.appendChild(el('h3', null, 'ИСТОЧНИКИ'));
     const tbl = el('table');
     tbl.appendChild(el('tr', null,
-      el('th', null, 'Источник'),
-      el('th', null, 'Статус'),
-      el('th', null, 'Причина')
+      el('th', null, 'ИСТОЧНИК'),
+      el('th', null, 'СТАТУС'),
+      el('th', null, 'ПРИЧИНА'),
     ));
     for (const [src, st] of Object.entries(res.sources_status)) {
       tbl.appendChild(el('tr', null,
-        el('td', null, src),
-        el('td', null, st.status || '—'),
-        el('td', { className: 'muted' }, st.reason || '')
+        el('td', null, nameRu(src)),
+        el('td', null, statusRu(st.status)),
+        el('td', { className: 'muted' }, reasonRu(st.reason)),
       ));
     }
     container.appendChild(tbl);
   }
 
   if (res.warnings && res.warnings.length) {
-    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Предупреждения'));
+    container.appendChild(el('h3', null, 'ПРЕДУПРЕЖДЕНИЯ'));
     const ul = el('ul', { className: 'warn-list' });
-    for (const w of res.warnings) ul.appendChild(el('li', null, w));
+    for (const w of res.warnings) {
+      const m = String(w).match(/^No data for:\s*(.*)$/i);
+      const ru = m
+        ? `НЕТ ДАННЫХ: ${m[1].split(',').map(s => nameRu(s.trim())).join(', ')}`
+        : String(w).toUpperCase();
+      ul.appendChild(el('li', null, ru));
+    }
     container.appendChild(ul);
   }
 
-  if (res.space_weather && Object.keys(res.space_weather).length) {
-    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Space weather'));
+  // таблица факторов — общий рендер для space_weather и mmod
+  function renderFactorTable(title, obj) {
+    if (!obj || !Object.keys(obj).length) return;
+    container.appendChild(el('h3', null, title));
     const tbl = el('table');
     tbl.appendChild(el('tr', null,
-      el('th', null, 'Фактор'),
-      el('th', null, 'Score'),
-      el('th', null, 'Reason code')
+      el('th', null, 'ФАКТОР'),
+      el('th', null, 'ОЦЕНКА'),
+      el('th', null, 'ЗОНА'),
+      el('th', null, 'ПРИЧИНА'),
+      el('th', null, ''),
     ));
-    for (const [k, v] of Object.entries(res.space_weather)) {
+    for (const [k, v] of Object.entries(obj)) {
       tbl.appendChild(el('tr', null,
-        el('td', null, k),
-        el('td', { className: 'mono' }, fmtScore(v.score)),
-        el('td', { className: 'muted' }, v.reason_code || '')
+        el('td', null, nameRu(k)),
+        el('td', { className: `mono ${scoreClass(v.score)}` }, fmtScore(v.score)),
+        el('td', null, v.score !== null ? riskBadge(v.score) : '—'),
+        el('td', { className: 'muted' }, reasonRu(v.reason_code)),
+        el('td', { style: 'min-width:120px' }, v.score !== null ? scoreBar(v.score) : ''),
       ));
     }
     container.appendChild(tbl);
   }
 
-  if (res.mmod && Object.keys(res.mmod).length) {
-    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'MMOD'));
-    const tbl = el('table');
-    tbl.appendChild(el('tr', null,
-      el('th', null, 'Фактор'),
-      el('th', null, 'Score'),
-      el('th', null, 'Reason code')
-    ));
-    for (const [k, v] of Object.entries(res.mmod)) {
-      tbl.appendChild(el('tr', null,
-        el('td', null, k),
-        el('td', { className: 'mono' }, fmtScore(v.score)),
-        el('td', { className: 'muted' }, v.reason_code || '')
-      ));
-    }
-    container.appendChild(tbl);
-  }
+  renderFactorTable('КОСМИЧЕСКАЯ ПОГОДА', res.space_weather);
+  renderFactorTable('MMOD (КОСМИЧЕСКИЙ МУСОР)', res.mmod);
 
   if (res.trajectory_sample && res.trajectory_sample.length) {
-    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Траектория (первые 5 точек)'));
+    container.appendChild(el('h3', null, 'ТРАЕКТОРИЯ (ПЕРВЫЕ 5 ТОЧЕК)'));
     const tbl = el('table');
     const keys = Object.keys(res.trajectory_sample[0]);
-    tbl.appendChild(el('tr', null, ...keys.map(k => el('th', null, k))));
+    tbl.appendChild(el('tr', null, ...keys.map(k => el('th', null, nameRu(k)))));
     for (const pt of res.trajectory_sample.slice(0, 5)) {
       tbl.appendChild(el('tr', null, ...keys.map(k => {
         const v = pt[k];
@@ -430,15 +472,12 @@ async function doEvaluate() {
   const container = $('#evaluateResult');
   container.innerHTML = '<p class="muted">Загрузка…</p>';
 
-  const mode  = getMode();
+  const mode = document.querySelector('input[name="mode"]:checked').value;
   const start = localToIso($('#evStart').value);
   const end   = localToIso($('#evEnd').value);
   const step  = parseInt($('#evStep').value, 10) || 10;
 
-  if (!start || !end) {
-    showError(container, 'Укажите начало и конец окна.');
-    return;
-  }
+  if (!start || !end) { showError(container, 'Укажите начало и конец окна.'); return; }
 
   try {
     const resp = await fetch('/evaluate', {
@@ -453,8 +492,7 @@ async function doEvaluate() {
       showError(container, `HTTP ${resp.status} — ${detail}`);
       return;
     }
-    const data = await resp.json();
-    renderEvaluate(data, container);
+    renderEvaluate(await resp.json(), container);
   } catch (e) {
     showError(container, e.message);
   }
@@ -468,16 +506,13 @@ async function doFactors() {
   container.innerHTML = '';
   try {
     const resp = await fetch('/factors');
-    if (!resp.ok) {
-      showError(container, `HTTP ${resp.status}`);
-      return;
-    }
+    if (!resp.ok) { showError(container, `HTTP ${resp.status}`); return; }
     const data = await resp.json();
     const box = el('div', { className: 'info-box' });
-    box.appendChild(el('div', { style: 'font-weight:600;margin-bottom:6px' }, 'Доступные факторы:'));
+    box.appendChild(el('div', { style: 'font-weight:600;margin-bottom:6px' }, 'ДОСТУПНЫЕ ФАКТОРЫ:'));
     const ul = el('ul', { style: 'margin-left:18px' });
     for (const f of data) {
-      ul.appendChild(el('li', null, `${f.name} — ${f.description || ''}`));
+      ul.appendChild(el('li', null, `${nameRu(f.name)} — ${f.description || ''}`));
     }
     box.appendChild(ul);
     container.appendChild(box);
@@ -493,24 +528,18 @@ const windowList = $('#windowList');
 let windowCounter = 0;
 
 function addWindow(startVal, endVal) {
-  const id = String.fromCharCode(65 + windowCounter); // A, B, C...
+  const id = String.fromCharCode(65 + windowCounter);
   windowCounter++;
-
   const row = el('div', { className: 'window-row', 'data-window-id': id });
   row.appendChild(el('span', { className: 'window-id' }, id));
-  row.appendChild(el('label', null, 'start ',
+  row.appendChild(el('label', null, 'начало ',
     el('input', { type: 'datetime-local', className: 'w-start', value: startVal || nowUtcStr(-1) })));
-  row.appendChild(el('label', null, 'end ',
+  row.appendChild(el('label', null, 'конец ',
     el('input', { type: 'datetime-local', className: 'w-end', value: endVal || nowUtcStr(0) })));
   row.appendChild(el('button', {
-    type: 'button',
-    className: 'secondary',
-    style: 'padding:4px 10px;font-size:0.85rem',
-    textContent: '✕',
-    onclick: () => {
-      row.remove();
-      renumberWindows();
-    },
+    type: 'button', className: 'secondary',
+    style: 'padding:4px 10px;font-size:0.85rem', textContent: '✕',
+    onclick: () => { row.remove(); renumberWindows(); },
   }));
   windowList.appendChild(row);
 }
@@ -522,8 +551,7 @@ function renumberWindows() {
     r.dataset.windowId = id;
     r.querySelector('.window-id').textContent = id;
   });
-  // windowCounter не сбрасываем — иначе после удаления среднего окна
-  // следующее добавленное получит уже занятый ID.
+  windowCounter = rows.length;
 }
 
 addWindow(nowUtcStr(-1), nowUtcStr(0));
@@ -541,22 +569,16 @@ async function doCompare() {
   const container = $('#compareResult');
   container.innerHTML = '<p class="muted">Загрузка…</p>';
 
-  const mode = getMode();
+  const mode = document.querySelector('input[name="cmpMode"]:checked').value;
   const rows = windowList.querySelectorAll('.window-row');
-  if (!rows.length) {
-    showError(container, 'Добавьте хотя бы одно окно.');
-    return;
-  }
+  if (!rows.length) { showError(container, 'Добавьте хотя бы одно окно.'); return; }
 
   const windows = [];
   for (const r of rows) {
     const id = r.dataset.windowId;
     const start = localToIso(r.querySelector('.w-start').value);
     const end   = localToIso(r.querySelector('.w-end').value);
-    if (!start || !end) {
-      showError(container, `Окно ${id}: укажите start и end.`);
-      return;
-    }
+    if (!start || !end) { showError(container, `Окно ${id}: укажите начало и конец.`); return; }
     windows.push({ id, start, end });
   }
 
@@ -573,8 +595,7 @@ async function doCompare() {
       showError(container, `HTTP ${resp.status} — ${detail}`);
       return;
     }
-    const data = await resp.json();
-    renderCompare(data, container);
+    renderCompare(await resp.json(), container);
   } catch (e) {
     showError(container, e.message);
   }
@@ -586,27 +607,37 @@ function renderCompare(res, container) {
   if (res.recommended) {
     const rec = el('div', { style: 'margin:12px 0;padding:12px;background:#1b2e1b;border:1px solid #2e7d32;border-radius:6px' });
     rec.appendChild(el('span', { style: 'font-weight:600;color:#a5d6a7' },
-      `Рекомендуется: ${res.recommended.id} (score ${fmtScore(res.recommended.score)})`));
+      `РЕКОМЕНДУЕТСЯ ОКНО ${res.recommended.id} (ОЦЕНКА ${fmtScore(res.recommended.score)})`));
     container.appendChild(rec);
   } else {
     container.appendChild(el('div', { className: 'error-box' },
-      res.explanation || 'Нет рекомендации'));
+      res.explanation || 'НЕТ РЕКОМЕНДАЦИИ'));
   }
 
   if (res.windows && res.windows.length) {
     const tbl = el('table');
     tbl.appendChild(el('tr', null,
-      el('th', null, 'ID'),
-      el('th', null, 'Overall score'),
-      el('th', null, 'Статус'),
-      el('th', null, 'Warnings')
+      el('th', null, 'ОКНО'),
+      el('th', null, 'ОЦЕНКА'),
+      el('th', null, 'ЗОНА'),
+      el('th', null, 'ДАННЫЕ'),
+      el('th', null, 'ШКАЛА'),
+      el('th', null, 'ПРЕДУПРЕЖДЕНИЯ'),
     ));
     for (const w of res.windows) {
+      const warns = (w.warnings || []).map(x => {
+        const m = String(x).match(/^No data for:\s*(.*)$/i);
+        return m
+          ? `НЕТ ДАННЫХ: ${m[1].split(',').map(s => nameRu(s.trim())).join(', ')}`
+          : String(x).toUpperCase();
+      }).join('; ') || '—';
       tbl.appendChild(el('tr', null,
         el('td', { className: 'mono' }, w.id),
-        el('td', { className: 'mono' }, fmtScore(w.overall_score)),
-        el('td', null, badge(w.status || '—')),
-        el('td', { className: 'muted' }, (w.warnings || []).join('; ') || '—')
+        el('td', { className: `mono ${scoreClass(w.overall_score)}` }, fmtScore(w.overall_score)),
+        el('td', null, w.overall_score !== null ? riskBadge(w.overall_score) : '—'),
+        el('td', null, dataStatusBadge(w.status || '—')),
+        el('td', { style: 'min-width:120px' }, w.overall_score !== null ? scoreBar(w.overall_score) : ''),
+        el('td', { className: 'muted' }, warns),
       ));
     }
     container.appendChild(tbl);
@@ -623,11 +654,6 @@ function renderCompare(res, container) {
 $('#btnEvaluate').addEventListener('click', doEvaluate);
 $('#btnCompare').addEventListener('click', doCompare);
 $('#btnFactors').addEventListener('click', doFactors);
-
-document.querySelectorAll('input[name="globalMode"]').forEach(r => {
-  r.addEventListener('change', updateModeHint);
-});
-updateModeHint();
 </script>
 </body>
 </html>
