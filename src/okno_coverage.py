@@ -55,7 +55,7 @@ def okno_is_covered(
         return True
 
     # current: достаточно, чтобы в окне вообще были строки.
-    sql = (f"SELECT COUNT(*) FROM {table} WHERE {time_col} >= ? AND"
+    sql = (f"SELECT COUNT(*) FROM {table} WHERE {time_col} >= ? AND "
            f"{time_col} <= ?")
     cur = conn.execute(sql, (start, end))
     count = cur.fetchone()[0]
