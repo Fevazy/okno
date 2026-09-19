@@ -14,7 +14,6 @@ from fetchers import kp as okno_kp
 from fetchers import donki as okno_donki
 from fetchers import socrates as okno_socrates
 
-
 TTL_FOR = {
     "kp": 3600,
     "cme": 21600,
@@ -34,7 +33,6 @@ def _lookback(date_str: str, days: int) -> str:
 
 
 def _call_fetcher(table: str, start: str, end: str):
-    # фетчеры имеют разные сигнатуры, поэтому диспетчер, а не единый вызов.
     start_date = start[:10]
     end_date = end[:10]
     if table == "kp":
@@ -42,7 +40,6 @@ def _call_fetcher(table: str, start: str, end: str):
     if table == "tle":
         return okno_tle.okno_fetch_tle()
     if table == "cme":
-        # для current: смотрим на неделю назад, чтобы поймать активные события.
         return okno_donki.okno_fetch_cme(_lookback(start_date, 7), end_date)
     if table == "flr":
         return okno_donki.okno_fetch_flr(_lookback(start_date, 7), end_date)
@@ -87,7 +84,6 @@ def _select(table: str, conn: Any, start: str, end: str, cutoff: Optional[str]):
 
 def okno_ensure_data(conn: Any, table: str, start: str, end: str, mode: str) -> Dict[str, str]:
     if mode == "historical":
-        # для historical сеть не трогаем вообще: архив уже в БД.
         cutoff = start
         if okno_coverage.okno_is_covered(conn, table, start, end, cutoff=cutoff):
             return {"status": "fresh", "reason": ""}
@@ -110,7 +106,6 @@ def okno_ensure_data(conn: Any, table: str, start: str, end: str, mode: str) -> 
         return {"status": "no_data", "reason": "SOURCE_TIMEOUT"}
 
     if not rows:
-        # источник ответил успешно, но событий в окне нет — это не отсутствие данных.
         return {"status": "fresh", "reason": "NO_EVENTS"}
 
     _upsert(table, conn, rows)
@@ -118,11 +113,9 @@ def okno_ensure_data(conn: Any, table: str, start: str, end: str, mode: str) -> 
 
 
 def _reason_for_score(score: Optional[float], fetch_status: Dict[str, str]) -> str:
-    # reason_code для оценки, а не для фетча.
     if fetch_status.get("status") == "no_data":
         return fetch_status.get("reason", "NO_DATA")
     if score is None:
-        # источник ответил, но по этому фактору событий нет — это не ошибка.
         return "NO_EVENTS"
     return "OK"
 
@@ -138,7 +131,6 @@ def okno_evaluate_core(
 ) -> Dict[str, Any]:
     warnings: List[str] = []
 
-    # траектория
     trajectory_sample: List[dict] = []
     tle_rows = data.get("tle") or []
     if tle_rows:
@@ -154,41 +146,20 @@ def okno_evaluate_core(
     else:
         warnings.append("No TLE data")
 
-    # overall score
     score_values = [v for v in scores.values() if isinstance(v, (int, float))]
     overall_score = sum(score_values) / len(score_values) if score_values else None
 
-    # оценки по факторам
     space_weather = {
-        "kp": {
-            "score": scores.get("kp"),
-            "reason_code": _reason_for_score(scores.get("kp"), sources_status.get("kp", {})),
-        },
-        "cme": {
-            "score": scores.get("cme"),
-            "reason_code": _reason_for_score(scores.get("cme"), sources_status.get("cme", {})),
-        },
-        "flr": {
-            "score": scores.get("flr"),
-            "reason_code": _reason_for_score(scores.get("flr"), sources_status.get("flr", {})),
-        },
-        "gst": {
-            "score": scores.get("gst"),
-            "reason_code": _reason_for_score(scores.get("gst"), sources_status.get("gst", {})),
-        },
+        "kp": {"score": scores.get("kp"), "reason_code": _reason_for_score(scores.get("kp"), sources_status.get("kp", {}))},
+        "cme": {"score": scores.get("cme"), "reason_code": _reason_for_score(scores.get("cme"), sources_status.get("cme", {}))},
+        "flr": {"score": scores.get("flr"), "reason_code": _reason_for_score(scores.get("flr"), sources_status.get("flr", {}))},
+        "gst": {"score": scores.get("gst"), "reason_code": _reason_for_score(scores.get("gst"), sources_status.get("gst", {}))},
     }
     mmod = {
-        "conjunctions": {
-            "score": scores.get("conjunctions"),
-            "reason_code": _reason_for_score(scores.get("conjunctions"), sources_status.get("conjunctions", {})),
-        },
-        "tle": {
-            "score": scores.get("tle"),
-            "reason_code": _reason_for_score(scores.get("tle"), sources_status.get("tle", {})),
-        },
+        "conjunctions": {"score": scores.get("conjunctions"), "reason_code": _reason_for_score(scores.get("conjunctions"), sources_status.get("conjunctions", {}))},
+        "tle": {"score": scores.get("tle"), "reason_code": _reason_for_score(scores.get("tle"), sources_status.get("tle", {}))},
     }
 
-    # warnings по отсутствующим источникам
     missing = [s for s, st in sources_status.items() if st.get("status") == "no_data"]
     if missing:
         warnings.append(f"No data for: {', '.join(missing)}")
@@ -277,21 +248,19 @@ def okno_compare_windows(
             "overall_score": ev["overall_score"],
             "status": ev["status"],
             "warnings": ev["warnings"],
-            # детализация по факторам — чтобы было видно, почему окно лучше.
             "space_weather": ev.get("space_weather", {}),
             "mmod": ev.get("mmod", {}),
         })
 
-    valid = [
-        r for r in results
-        if r["status"] != "insufficient_data" and r["overall_score"] is not None
-    ]
+    # Окно считается валидным для рекомендации, если у него есть числовая оценка
+    # (даже если часть источников отсутствует).
+    valid = [r for r in results if r["overall_score"] is not None]
 
     if not valid:
         recommended = None
         explanation = "Недостаточно данных для рекомендации"
     else:
-        # оценка -100..+100, где +100 = худший риск. Лучшее окно — минимальное.
+        # Меньшая оценка = меньший риск. Ранжируем по возрастанию.
         best = min(valid, key=lambda x: x["overall_score"])
         recommended = {"id": best["id"], "score": best["overall_score"]}
 
