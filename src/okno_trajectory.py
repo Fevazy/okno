@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 import math
 from datetime import datetime, timezone, timedelta
-
 from sgp4.api import Satrec, jday
-try:
-    from sgp4.functions import gstime
-except ImportError:
-    # старая версия python-sgp4
-    from sgp4.ext import gstime
+
+
+def _okno_gmst(jd: float) -> float:
+    return (4.894961212735792 + 6.300388098984893 * (jd - 2451545.0)
+            ) % (2.0 * math.pi)
+
 
 OKNO_WGS84_A_KM = 6378.137
 OKNO_WGS84_F = 1.0 / 298.257223563
@@ -31,7 +31,7 @@ def _okno_eci_to_geodetic(
     x: float, y: float, z: float, jd: float, fr: float
 ) -> tuple[float, float, float]:
     # TEME -> ECEF через GMST, затем ECEF -> геодезия (Bowring fixed-point).
-    gmst = gstime(jd + fr)
+    gmst = _okno_gmst(jd + fr)
     cg = math.cos(gmst)
     sg = math.sin(gmst)
     xe = x * cg + y * sg
