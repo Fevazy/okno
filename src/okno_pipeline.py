@@ -76,7 +76,7 @@ def _select(table: str, conn: Any, start: str, end: str,
                                                 cutoff=cutoff)
     if table == "tle":
         # TLE выбирается отдельно: последний доступный снимок
-        return okno_db.okno_select_last_tle(conn)
+        return okno_db.okno_select_latest_tle(conn)
     raise ValueError(f"unknown table: {table}")
 
 
