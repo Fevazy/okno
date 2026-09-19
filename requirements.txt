@@ -3,6 +3,7 @@ annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1
 certifi==2026.7.22
+charset-normalizer==3.5.1
 click==8.5.0
 detect-installer==0.2.1
 dnspython==2.8.0
@@ -28,10 +29,12 @@ Pygments==2.21.0
 python-dotenv==1.2.3
 python-multipart==0.0.32
 PyYAML==6.0.3
+requests==2.34.2
 rich==15.0.0
 rich-toolkit==0.20.5
 rignore==0.8.1
 sentry-sdk==2.69.2
+sgp4==2.27
 shellingham==1.5.4
 starlette==1.6.0
 typer==0.27.2
