@@ -7,10 +7,9 @@ def _now() -> str:
 
 
 def _strip_tags(s: str) -> str:
-    out: list[str] = []
+    out = []
     i = 0
-    n = len(s)
-    while i < n:
+    while i < len(s):
         if s[i] == "<":
             j = s.find(">", i)
             if j == -1:
@@ -22,7 +21,7 @@ def _strip_tags(s: str) -> str:
     return "".join(out).strip()
 
 
-def _to_float(s: str | None) -> float | None:
+def _to_float(s):
     if s is None:
         return None
     t = s.strip()
@@ -34,21 +33,24 @@ def _to_float(s: str | None) -> float | None:
         return None
 
 
-def okno_fetch_conjunctions(norad_id: int = 25544, days_ahead: int = 2
-                            ) -> list[dict]:
+def okno_fetch_conjunctions(norad_id: int = 25544, days_ahead: int = 2) -> list[dict]:
     url = (
         "https://celestrak.org/SOCRATES/table-socrates.php"
         f"?CATNR={norad_id}&MAX={days_ahead * 24}"
     )
-    r = requests.get(url, timeout=60)
+    r = requests.get(url, timeout=15)
     if r.status_code != 200:
         raise RuntimeError(f"celestrak socrates: HTTP {r.status_code}")
 
-    # SOCRATES отдаёт HTML, а не JSON, парсим вручную.
-    html = r.text.replace("<th>", "<td>").replace("</th>", "</td>")
+    html = r.text
+    if "<html" not in html.lower() and "<!doctype" not in html.lower():
+        # если когда-нибудь переедут на CSV — увидим это в логе.
+        raise RuntimeError("celestrak socrates: expected HTML page")
 
+    # SOCRATES отдаёт HTML-таблицу; парсим вручную, без bs4.
+    html2 = html.replace("<th>", "<td>").replace("</th>", "</td>")
     rows: list[list[str]] = []
-    for raw in html.split("<tr>"):
+    for raw in html2.split("<tr>"):
         cells_raw = raw.split("<td>")
         if len(cells_raw) < 2:
             continue
@@ -57,12 +59,13 @@ def okno_fetch_conjunctions(norad_id: int = 25544, days_ahead: int = 2
             rows.append(cells)
 
     if len(rows) < 2:
-        raise RuntimeError("celestrak socrates: parse failed")
+        # нет строк данных — это не ошибка, просто нет сближений
+        return []
 
     header = [c.upper() for c in rows[0]]
     idx = {name: i for i, name in enumerate(header)}
 
-    def pick(row: list[str], *names: str) -> str | None:
+    def pick(row, *names):
         for n in names:
             if n in idx:
                 i = idx[n]
@@ -79,21 +82,14 @@ def okno_fetch_conjunctions(norad_id: int = 25544, days_ahead: int = 2
             continue
         out.append({
             "norad_id": norad_id,
-            # SOCRATES называет колонку SAT_NAME; остальные варианты — запасные
-            "object_name": pick(row, "SAT_NAME", "SATNAME", "OBJECT_NAME",
-                                "NAME"),
+            "object_name": pick(row, "NAME", "SAT_NAME", "OBJECT_NAME"),
             "tca": tca,
-            "min_range_km": _to_float(pick(row, "TCA_RANGE", "MIN_RANGE_KM",
-                                           "MIN_RANGE")),
-            "rel_speed_km_s": _to_float(pick(row, "TCA_RELATIVE_SPEED",
-                                             "REL_SPEED_KM_S", "REL_SPEED")),
-            "probability": _to_float(pick(row, "MAX_PROB", "PROBABILITY")),
+            "min_range_km": _to_float(pick(row, "MIN RANGE (KM)", "TCA_RANGE", "MIN_RANGE_KM")),
+            "rel_speed_km_s": _to_float(pick(row, "RELATIVE SPEED (KM/SEC)", "TCA_RELATIVE_SPEED", "REL_SPEED_KM_S")),
+            "probability": _to_float(pick(row, "MAX PROBABILITY", "MAX_PROB", "PROBABILITY")),
             "published_at": tca,
             "fetched_at": fetched_at,
             "source": "celestrak_socrates",
         })
-
-    if not out:
-        raise RuntimeError("celestrak socrates: parse failed")
 
     return out
