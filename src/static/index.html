@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKNO — прогнозирование внешних рисков ВКД</title>
+<style>
+  :root {
+    --bg: #1a1a1a;
+    --fg: #e0e0e0;
+    --muted: #888;
+    --border: #333;
+    --ok: #2e7d32;
+    --ok-fg: #a5d6a7;
+    --partial: #f9a825;
+    --partial-fg: #fff9c4;
+    --insufficient: #c62828;
+    --insufficient-fg: #ef9a9a;
+    --accent: #4fc3f7;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 1.1rem;
+    margin: 24px 0 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  fieldset {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  legend {
+    font-weight: 600;
+    padding: 0 8px;
+    color: var(--muted);
+  }
+  label {
+    display: inline-block;
+    margin-right: 12px;
+    margin-bottom: 8px;
+  }
+  input, select, button {
+    background: #252525;
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+  input:focus, select:focus {
+    outline: 1px solid var(--accent);
+    border-color: var(--accent);
+  }
+  button {
+    cursor: pointer;
+    background: var(--accent);
+    color: #111;
+    font-weight: 600;
+    border: none;
+    padding: 8px 18px;
+    transition: opacity .15s;
+  }
+  button:hover { opacity: .85; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.secondary {
+    background: #333;
+    color: var(--fg);
+    font-weight: 400;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: end;
+  }
+  .row > div { flex: 0 0 auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 16px;
+    font-size: 0.9rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  .score-big {
+    font-family: var(--mono);
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .badge.ok          { background: var(--ok);           color: var(--ok-fg); }
+  .badge.partial     { background: var(--partial);      color: var(--partial-fg); }
+  .badge.insufficient_data { background: var(--insufficient); color: var(--insufficient-fg); }
+  .error-box {
+    background: #4a1010;
+    border: 1px solid #c62828;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    color: #ef9a9a;
+    font-size: 0.9rem;
+  }
+  .info-box {
+    background: #102030;
+    border: 1px solid #4fc3f7;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    color: #b3e5fc;
+    font-size: 0.9rem;
+  }
+  .warn-list {
+    list-style: none;
+    padding: 0;
+  }
+  .warn-list li {
+    padding: 4px 0;
+    color: #ffb74d;
+    font-size: 0.9rem;
+  }
+  .warn-list li::before { content: '⚠ '; }
+  .mono { font-family: var(--mono); }
+  .muted { color: var(--muted); font-size: 0.85rem; }
+  .window-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .window-row input { flex: 0 0 auto; }
+  .window-id {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 28px;
+    text-align: center;
+  }
+  #compareResult { margin-top: 16px; }
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .top-bar h1 { margin: 0; }
+
+  /* Панель глобального режима — единственный переключатель на странице. */
+  .mode-bar {
+    background: #1f2733;
+    border-color: #2b3a4d;
+  }
+  .mode-bar legend { color: var(--accent); }
+  .mode-bar .row { align-items: center; }
+  .mode-bar strong { margin-right: 4px; }
+  #modeHint {
+    margin-left: 8px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>OKNO — прогнозирование внешних рисков ВКД</h1>
+  <button class="secondary" id="btnFactors">Факторы</button>
+</div>
+<div id="factorsResult"></div>
+
+<!-- ===== Единственный переключатель режима ===== -->
+<fieldset class="mode-bar">
+  <legend>Режим расчёта</legend>
+  <div class="row">
+    <strong>Режим:</strong>
+    <label><input type="radio" name="globalMode" value="current" checked> current</label>
+    <label><input type="radio" name="globalMode" value="historical"> historical</label>
+  </div>
+  <div id="modeHint" class="muted"></div>
+</fieldset>
+
+<!-- ===== Форма оценки ===== -->
+<fieldset>
+  <legend>Оценка окна</legend>
+  <div class="row" style="margin-bottom:12px">
+    <div>
+      <label for="evStart">Начало (UTC)</label><br>
+      <input type="datetime-local" id="evStart" required>
+    </div>
+    <div>
+      <label for="evEnd">Конец (UTC)</label><br>
+      <input type="datetime-local" id="evEnd" required>
+    </div>
+    <div>
+      <label for="evStep">Шаг, мин</label><br>
+      <input type="number" id="evStep" value="10" min="1" max="60" style="width:80px">
+    </div>
+    <div>
+      <button id="btnEvaluate">Оценить</button>
+    </div>
+  </div>
+  <p class="muted">Все времена — UTC.</p>
+</fieldset>
+
+<!-- ===== Результат оценки ===== -->
+<div id="evaluateResult"></div>
+
+<!-- ===== Сравнение окон ===== -->
+<h2>Сравнить окна</h2>
+<fieldset>
+  <legend>Окна</legend>
+  <div id="windowList"></div>
+  <button type="button" class="secondary" id="btnAddWindow" style="margin-top:8px">+ добавить окно</button>
+  <div style="margin-top:12px">
+    <button type="button" id="btnCompare">Сравнить</button>
+  </div>
+</fieldset>
+<div id="compareResult"></div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Утилиты
+// ---------------------------------------------------------------------------
+const $ = (sel) => document.querySelector(sel);
+
+const el = (tag, attrs = {}, ...children) => {
+  const e = document.createElement(tag);
+  // Защита от null/undefined: в коде повсеместно el('td', null, ...).
+  if (attrs) {
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v === null || v === undefined) continue;
+      if (k === 'className') e.className = v;
+      else if (k === 'textContent') e.textContent = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v);
+    }
+  }
+  for (const c of children) {
+    if (typeof c === 'string') e.appendChild(document.createTextNode(c));
+    else if (c) e.appendChild(c);
+  }
+  return e;
+};
+
+function fmtScore(v) {
+  if (v === null || v === undefined) return '—';
+  return Number(v).toFixed(2);
+}
+
+// Единая точка чтения режима: оба запроса (/evaluate и /compare) берут отсюда.
+function getMode() {
+  const checked = document.querySelector('input[name="globalMode"]:checked');
+  return checked ? checked.value : 'current';
+}
+
+// datetime-local value "2024-06-01T12:00" -> ISO "2024-06-01T12:00:00+00:00"
+// поле трактуется как UTC (так написано в лейбле).
+function localToIso(val) {
+  if (!val) return '';
+  const withSec = val.length === 16 ? val + ':00' : val;
+  return withSec + '+00:00';
+}
+
+// UTC-время, сдвинутое на offsetHours, в формате datetime-local.
+function nowUtcStr(offsetHours = 0) {
+  const d = new Date(Date.now() + offsetHours * 3600_000);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+}
+
+function showError(container, msg) {
+  container.innerHTML = '';
+  container.appendChild(el('div', { className: 'error-box' }, `Ошибка: ${msg}`));
+}
+
+function badge(status) {
+  return el('span', { className: `badge ${status}` }, status);
+}
+
+// ---------------------------------------------------------------------------
+// Подсказка под переключателем режима
+// ---------------------------------------------------------------------------
+function updateModeHint() {
+  const hint = $('#modeHint');
+  hint.textContent = getMode() === 'historical'
+    ? 'Используются только данные, опубликованные не позже начала окна (защита от look-ahead bias). Сеть не опрашивается. Допустимый диапазон начала: 2024-05-01 … 2024-06-30.'
+    : 'Используются актуальные данные: при устаревании источников бэкенд дозагружает их из сети.';
+}
+
+// ---------------------------------------------------------------------------
+// Отрисовка результата оценки
+// ---------------------------------------------------------------------------
+function renderEvaluate(res, container) {
+  container.innerHTML = '';
+
+  const scoreDiv = el('div', { style: 'margin:16px 0' });
+  scoreDiv.appendChild(el('div', { className: 'muted' }, 'Overall score'));
+  const scoreRow = el('div', { style: 'display:flex;align-items:center;gap:16px;margin-top:4px' });
+  scoreRow.appendChild(el('span', { className: 'score-big', textContent: fmtScore(res.overall_score) }));
+  scoreRow.appendChild(badge(res.status || '—'));
+  scoreDiv.appendChild(scoreRow);
+  container.appendChild(scoreDiv);
+
+  if (res.status === 'insufficient_data') {
+    container.appendChild(el('div', { className: 'error-box' },
+      'Недостаточно данных для расчёта overall_score. Проверьте источники ниже.'));
+  }
+
+  if (res.sources_status && Object.keys(res.sources_status).length) {
+    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Источники'));
+    const tbl = el('table');
+    tbl.appendChild(el('tr', null,
+      el('th', null, 'Источник'),
+      el('th', null, 'Статус'),
+      el('th', null, 'Причина')
+    ));
+    for (const [src, st] of Object.entries(res.sources_status)) {
+      tbl.appendChild(el('tr', null,
+        el('td', null, src),
+        el('td', null, st.status || '—'),
+        el('td', { className: 'muted' }, st.reason || '')
+      ));
+    }
+    container.appendChild(tbl);
+  }
+
+  if (res.warnings && res.warnings.length) {
+    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Предупреждения'));
+    const ul = el('ul', { className: 'warn-list' });
+    for (const w of res.warnings) ul.appendChild(el('li', null, w));
+    container.appendChild(ul);
+  }
+
+  if (res.space_weather && Object.keys(res.space_weather).length) {
+    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Space weather'));
+    const tbl = el('table');
+    tbl.appendChild(el('tr', null,
+      el('th', null, 'Фактор'),
+      el('th', null, 'Score'),
+      el('th', null, 'Reason code')
+    ));
+    for (const [k, v] of Object.entries(res.space_weather)) {
+      tbl.appendChild(el('tr', null,
+        el('td', null, k),
+        el('td', { className: 'mono' }, fmtScore(v.score)),
+        el('td', { className: 'muted' }, v.reason_code || '')
+      ));
+    }
+    container.appendChild(tbl);
+  }
+
+  if (res.mmod && Object.keys(res.mmod).length) {
+    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'MMOD'));
+    const tbl = el('table');
+    tbl.appendChild(el('tr', null,
+      el('th', null, 'Фактор'),
+      el('th', null, 'Score'),
+      el('th', null, 'Reason code')
+    ));
+    for (const [k, v] of Object.entries(res.mmod)) {
+      tbl.appendChild(el('tr', null,
+        el('td', null, k),
+        el('td', { className: 'mono' }, fmtScore(v.score)),
+        el('td', { className: 'muted' }, v.reason_code || '')
+      ));
+    }
+    container.appendChild(tbl);
+  }
+
+  if (res.trajectory_sample && res.trajectory_sample.length) {
+    container.appendChild(el('h3', { style: 'margin:16px 0 8px;font-size:1rem' }, 'Траектория (первые 5 точек)'));
+    const tbl = el('table');
+    const keys = Object.keys(res.trajectory_sample[0]);
+    tbl.appendChild(el('tr', null, ...keys.map(k => el('th', null, k))));
+    for (const pt of res.trajectory_sample.slice(0, 5)) {
+      tbl.appendChild(el('tr', null, ...keys.map(k => {
+        const v = pt[k];
+        return el('td', { className: typeof v === 'number' ? 'mono' : '' },
+          typeof v === 'number' ? v.toFixed(3) : String(v ?? ''));
+      })));
+    }
+    container.appendChild(tbl);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Оценка (POST /evaluate)
+// ---------------------------------------------------------------------------
+async function doEvaluate() {
+  const container = $('#evaluateResult');
+  container.innerHTML = '<p class="muted">Загрузка…</p>';
+
+  const mode  = getMode();
+  const start = localToIso($('#evStart').value);
+  const end   = localToIso($('#evEnd').value);
+  const step  = parseInt($('#evStep').value, 10) || 10;
+
+  if (!start || !end) {
+    showError(container, 'Укажите начало и конец окна.');
+    return;
+  }
+
+  try {
+    const resp = await fetch('/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start, end, step_minutes: step, mode }),
+    });
+    if (!resp.ok) {
+      const txt = await resp.text();
+      let detail = txt;
+      try { detail = JSON.stringify(JSON.parse(txt), null, 2); } catch (_) {}
+      showError(container, `HTTP ${resp.status} — ${detail}`);
+      return;
+    }
+    const data = await resp.json();
+    renderEvaluate(data, container);
+  } catch (e) {
+    showError(container, e.message);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Факторы (GET /factors)
+// ---------------------------------------------------------------------------
+async function doFactors() {
+  const container = $('#factorsResult');
+  container.innerHTML = '';
+  try {
+    const resp = await fetch('/factors');
+    if (!resp.ok) {
+      showError(container, `HTTP ${resp.status}`);
+      return;
+    }
+    const data = await resp.json();
+    const box = el('div', { className: 'info-box' });
+    box.appendChild(el('div', { style: 'font-weight:600;margin-bottom:6px' }, 'Доступные факторы:'));
+    const ul = el('ul', { style: 'margin-left:18px' });
+    for (const f of data) {
+      ul.appendChild(el('li', null, `${f.name} — ${f.description || ''}`));
+    }
+    box.appendChild(ul);
+    container.appendChild(box);
+  } catch (e) {
+    showError(container, e.message);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Окна для сравнения
+// ---------------------------------------------------------------------------
+const windowList = $('#windowList');
+let windowCounter = 0;
+
+function addWindow(startVal, endVal) {
+  const id = String.fromCharCode(65 + windowCounter); // A, B, C...
+  windowCounter++;
+
+  const row = el('div', { className: 'window-row', 'data-window-id': id });
+  row.appendChild(el('span', { className: 'window-id' }, id));
+  row.appendChild(el('label', null, 'start ',
+    el('input', { type: 'datetime-local', className: 'w-start', value: startVal || nowUtcStr(-1) })));
+  row.appendChild(el('label', null, 'end ',
+    el('input', { type: 'datetime-local', className: 'w-end', value: endVal || nowUtcStr(0) })));
+  row.appendChild(el('button', {
+    type: 'button',
+    className: 'secondary',
+    style: 'padding:4px 10px;font-size:0.85rem',
+    textContent: '✕',
+    onclick: () => {
+      row.remove();
+      renumberWindows();
+    },
+  }));
+  windowList.appendChild(row);
+}
+
+function renumberWindows() {
+  const rows = windowList.querySelectorAll('.window-row');
+  rows.forEach((r, i) => {
+    const id = String.fromCharCode(65 + i);
+    r.dataset.windowId = id;
+    r.querySelector('.window-id').textContent = id;
+  });
+  // windowCounter не сбрасываем — иначе после удаления среднего окна
+  // следующее добавленное получит уже занятый ID.
+}
+
+addWindow(nowUtcStr(-1), nowUtcStr(0));
+addWindow(nowUtcStr(0), nowUtcStr(1));
+
+$('#btnAddWindow').addEventListener('click', () => {
+  if (windowCounter >= 26) { alert('Максимум 26 окон'); return; }
+  addWindow();
+});
+
+// ---------------------------------------------------------------------------
+// Сравнение (POST /compare)
+// ---------------------------------------------------------------------------
+async function doCompare() {
+  const container = $('#compareResult');
+  container.innerHTML = '<p class="muted">Загрузка…</p>';
+
+  const mode = getMode();
+  const rows = windowList.querySelectorAll('.window-row');
+  if (!rows.length) {
+    showError(container, 'Добавьте хотя бы одно окно.');
+    return;
+  }
+
+  const windows = [];
+  for (const r of rows) {
+    const id = r.dataset.windowId;
+    const start = localToIso(r.querySelector('.w-start').value);
+    const end   = localToIso(r.querySelector('.w-end').value);
+    if (!start || !end) {
+      showError(container, `Окно ${id}: укажите start и end.`);
+      return;
+    }
+    windows.push({ id, start, end });
+  }
+
+  try {
+    const resp = await fetch('/compare', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ windows, mode }),
+    });
+    if (!resp.ok) {
+      const txt = await resp.text();
+      let detail = txt;
+      try { detail = JSON.stringify(JSON.parse(txt), null, 2); } catch (_) {}
+      showError(container, `HTTP ${resp.status} — ${detail}`);
+      return;
+    }
+    const data = await resp.json();
+    renderCompare(data, container);
+  } catch (e) {
+    showError(container, e.message);
+  }
+}
+
+function renderCompare(res, container) {
+  container.innerHTML = '';
+
+  if (res.recommended) {
+    const rec = el('div', { style: 'margin:12px 0;padding:12px;background:#1b2e1b;border:1px solid #2e7d32;border-radius:6px' });
+    rec.appendChild(el('span', { style: 'font-weight:600;color:#a5d6a7' },
+      `Рекомендуется: ${res.recommended.id} (score ${fmtScore(res.recommended.score)})`));
+    container.appendChild(rec);
+  } else {
+    container.appendChild(el('div', { className: 'error-box' },
+      res.explanation || 'Нет рекомендации'));
+  }
+
+  if (res.windows && res.windows.length) {
+    const tbl = el('table');
+    tbl.appendChild(el('tr', null,
+      el('th', null, 'ID'),
+      el('th', null, 'Overall score'),
+      el('th', null, 'Статус'),
+      el('th', null, 'Warnings')
+    ));
+    for (const w of res.windows) {
+      tbl.appendChild(el('tr', null,
+        el('td', { className: 'mono' }, w.id),
+        el('td', { className: 'mono' }, fmtScore(w.overall_score)),
+        el('td', null, badge(w.status || '—')),
+        el('td', { className: 'muted' }, (w.warnings || []).join('; ') || '—')
+      ));
+    }
+    container.appendChild(tbl);
+  }
+
+  if (res.explanation) {
+    container.appendChild(el('p', { className: 'muted', style: 'margin-top:8px' }, res.explanation));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Привязка событий
+// ---------------------------------------------------------------------------
+$('#btnEvaluate').addEventListener('click', doEvaluate);
+$('#btnCompare').addEventListener('click', doCompare);
+$('#btnFactors').addEventListener('click', doFactors);
+
+document.querySelectorAll('input[name="globalMode"]').forEach(r => {
+  r.addEventListener('change', updateModeHint);
+});
+updateModeHint();
+</script>
+</body>
+</html>

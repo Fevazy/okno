@@ -1,15 +1,17 @@
 # Copyright (c) 2026 Vasilyev Fyodor Mikhaylovich (aka Fevazy)
 # SPDX-License-Identifier: Apache-2.0
 
-from fastapi import FastAPI, Depends, HTTPException
 from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List
-import sqlite3
 import datetime
 import okno_db
 import okno_pipeline
+import sqlite3
 
 OKNO_DB_PATH = "okno.db"
 
@@ -155,3 +157,9 @@ def okno_factors():
 @app.get("/health")
 def okno_health():
     return {"status": "ok"}
+
+app.mount("/static", StaticFiles(directory="src/static"), name="static")
+
+@app.get("/")
+def okno_index():
+    return FileResponse("src/static/index.html")
