@@ -1,6 +1,7 @@
 # Copyright (c) 2026 Vasilyev Fyodor Mikhaylovich (aka Fevazy)
 # SPDX-License-Identifier: Apache-2.0
 
+from dotenv import load_dotenv
 from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
@@ -12,6 +13,8 @@ import datetime
 import okno_db
 import okno_pipeline
 import sqlite3
+
+load_dotenv()
 
 OKNO_DB_PATH = "okno.db"
 
