@@ -1,3 +1,4 @@
 .env
-.venv/
+okno.db #remove later ater populating db
 __pycache__/
+.venv/
