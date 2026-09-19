@@ -7,7 +7,8 @@ def _now() -> str:
 
 
 def okno_fetch_tle(norad_id: int = 25544) -> list[dict]:
-    url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={norad_id}&FORMAT=TLE"
+    url = (f"https://celestrak.org/NORAD/elements/gp.php?CATNR={norad_id}"
+           "&FORMAT=TLE")
     r = requests.get(url, timeout=30)
     if r.status_code != 200:
         raise RuntimeError(f"celestrak tle: HTTP {r.status_code}")
@@ -31,8 +32,8 @@ def okno_fetch_tle(norad_id: int = 25544) -> list[dict]:
         yy = int(line1[18:20])
         year = 2000 + yy if yy < 57 else 1900 + yy
         doy = float(line1[20:32])
-        epoch = datetime(year, 1, 1, tzinfo=timezone.utc) + timedelta(days=doy - 1.0)
-
+        epoch = datetime(year, 1, 1, tzinfo=timezone.utc) + (
+                timedelta(days=doy - 1.0))
         out.append({
             "norad_id": norad_id,
             "epoch": epoch.isoformat(),
