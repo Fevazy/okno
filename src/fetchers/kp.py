@@ -30,12 +30,14 @@ def okno_fetch_kp() -> list[dict]:
     out: list[dict] = []
 
     if isinstance(data[0], dict):
-        # новая схема: массив объектов с ключами
         for item in data:
             t = _iso(str(item["time_tag"]))
+            kp_val = item.get("Kp")
+            if kp_val is None:
+                continue
             out.append({
                 "time": t,
-                "kp": float(item["estimated_kp"]),
+                "kp": float(kp_val),
                 "published_at": t,
                 "fetched_at": fetched_at,
                 "source": "noaa_swpc",
